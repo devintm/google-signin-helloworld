@@ -6,7 +6,23 @@
   </head>
   <body>
     <h1>Google Signin Test</h1>
+
+    <h3>Sign in button</h3>
     <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
+
+    <br>
+
+    <h3>Sign out button<h3>
+    <a href="#" onclick="signOut();">Sign out</a>
+    <script>
+      function signOut() {
+        var auth2 = gapi.auth2.getAuthInstance();
+        auth2.signOut().then(function () {
+          console.log('User signed out.');
+        });
+      }
+    </script>
+
     <script>
       function onSignIn(googleUser) {
         // Useful data for your client-side scripts:
@@ -21,6 +37,17 @@
         // The ID token you need to pass to your backend:
         var id_token = googleUser.getAuthResponse().id_token;
         console.log("ID Token: " + id_token);
+
+        // NOTE - here we are making a request to the backend to validate
+        //  the authentication token
+        var xhr = new XMLHttpRequest();
+        // xhr.open('POST', 'https://yourbackend.example.com/tokensignin');
+        xhr.open('POST', 'http://localhost:8080/api/oauth/google');
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onload = function() {
+          console.log('Signed in as: ' + xhr.responseText);
+        };
+        xhr.send('idtoken=' + id_token);
       }
     </script>
   </body>
